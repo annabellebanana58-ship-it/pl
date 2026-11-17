@@ -20,6 +20,12 @@
 #define EI_PAD 9
 #define EI_NIDENT 16
 
+#define ELFCLASS64   2
+#define ELFDATA2LSB  1
+
+#define ET_EXEC      2
+#define EM_AARCH64   183
+
 #define PT_NULL 0
 #define PT_LOAD 1
 #define PT_DYNAMIC 2

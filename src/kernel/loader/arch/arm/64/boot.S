@@ -20,7 +20,7 @@ park_loop:
   b park_loop
 
 primary_core:
-  ldr x1, =_start
+  ldr x1, =__stack_top
   mov sp, x1
 
   ldr x1, =__bss_start

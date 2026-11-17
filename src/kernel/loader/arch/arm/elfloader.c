@@ -8,7 +8,7 @@
  * script to actually work
  */
 
-extern void *kernel_elf_start;
+extern uint8_t kernel_elf_start[];
 
 void
 loader_main(void *dtb)
@@ -16,7 +16,7 @@ loader_main(void *dtb)
 	(void)dtb;
 
 	Elf64_Ehdr *eh = (Elf64_Ehdr *)kernel_elf_start;
-	Elf64_Phdr *ph = (Elf64_Phdr *)((uint8_t *)kernel_elf_start + eh->e_phoff);
+	Elf64_Phdr *ph = (Elf64_Phdr *)(kernel_elf_start + eh->e_phoff);
 
 	if (eh->e_ident[EI_MAG0] != ELFMAG0 || eh->e_ident[EI_MAG1] != ELFMAG1 ||
 		eh->e_ident[EI_MAG2] != ELFMAG2 || eh->e_ident[EI_MAG3] != ELFMAG3) {
@@ -36,12 +36,12 @@ loader_main(void *dtb)
 		uint64_t start = ph->p_paddr & ~63UL;
 		uint64_t end   = ph->p_paddr + ph->p_memsz;
 		for (uint64_t addr = start; addr < end; addr += 64) {
-			asm volatile("dc cvau, %0" :: "r"(addr));
+			asm volatile("dc cvau, %0" :: "r"(addr) : "memory");
 		}
 	}
-	asm volatile("dsb ish");
+	asm volatile("dsb ish" ::: "memory");
 
-	ph = (Elf64_Phdr *)((uint8_t *)kernel_elf_start + eh->e_phoff);
+	ph = (Elf64_Phdr *)(kernel_elf_start + eh->e_phoff);
 	for (int i = 0; i < eh->e_phnum; i++, ph++) {
 		if (ph->p_type != PT_LOAD)
 			continue;
@@ -49,11 +49,11 @@ loader_main(void *dtb)
 		uint64_t start = ph->p_paddr & ~63UL;
 		uint64_t end   = ph->p_paddr + ph->p_memsz;
 		for (uint64_t addr = start; addr < end; addr += 64) {
-			asm volatile("ic ivau, %0" :: "r"(addr));
+			asm volatile("ic ivau, %0" :: "r"(addr) : "memory");
 		}
 	}
-	asm volatile("dsb ish");
-	asm volatile("isb");
+	asm volatile("dsb ish" ::: "memory");
+	asm volatile("isb" ::: "memory");
 
 	void (*kernel_entry)(void *) = (void *)(uintptr_t)eh->e_entry;
 	kernel_entry(dtb);

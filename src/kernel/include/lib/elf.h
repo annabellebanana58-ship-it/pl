@@ -3,6 +3,11 @@
 
 #include <stdint.h>
 
+#define ELFMAG0         0x7f
+#define ELFMAG1         'E'
+#define ELFMAG2         'L'
+#define ELFMAG3         'F'
+
 #define EI_MAG0 0
 #define EI_MAG1 1
 #define EI_MAG2 2

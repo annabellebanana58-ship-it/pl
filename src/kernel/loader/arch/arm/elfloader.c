@@ -8,6 +8,8 @@
  * script to actually work
  */
 
+extern void *kernel_elf_start;
+
 void
 loader_main(void *dtb)
 {
@@ -28,11 +30,11 @@ loader_main(void *dtb)
 		if (ph->p_type != PT_LOAD)
 			continue;
 
-		memcpy((void *)ph->p_addr, kernel_elf_start + ph->p_offset, ph->p_filesz);
-		memset((void *)(ph->p_addr + ph->p_filesz), 0, ph->p_memsz - ph->p_filesz);
+		memcpy((void *)ph->p_paddr, kernel_elf_start + ph->p_offset, ph->p_filesz);
+		memset((void *)(ph->p_paddr + ph->p_filesz), 0, ph->p_memsz - ph->p_filesz);
 
-		uint64_t start = ph->p_addr & ~63UL;
-		uint64_t end   = ph->p_addr + ph->p_memsz;
+		uint64_t start = ph->p_paddr & ~63UL;
+		uint64_t end   = ph->p_paddr + ph->p_memsz;
 		for (uint64_t addr = start; addr < end; addr += 64) {
 			asm volatile("dc cvau, %0" :: "r"(addr));
 		}
@@ -44,8 +46,8 @@ loader_main(void *dtb)
 		if (ph->p_type != PT_LOAD)
 			continue;
 
-		uint64_t start = ph->p_addr & ~63UL;
-		uint64_t end   = ph->p_addr + ph->p_memsz;
+		uint64_t start = ph->p_paddr & ~63UL;
+		uint64_t end   = ph->p_paddr + ph->p_memsz;
 		for (uint64_t addr = start; addr < end; addr += 64) {
 			asm volatile("ic ivau, %0" :: "r"(addr));
 		}

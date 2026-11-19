@@ -4,7 +4,7 @@
  * 
  * Hi, I am Annabelle, this is,
  *
- * src/bootloader/arch/arm/boot.S
+ * src/kernel/loader/arch/arm/64/boot.S
  * - annabelle
  */
 
@@ -28,7 +28,7 @@ primary_core:
 
 zero_bss_loop:
   cmp x1, x2
-  b.ge  call_loader
+  b.hs  call_loader
   str xzr, [x1], #8
   b zero_bss_loop
 

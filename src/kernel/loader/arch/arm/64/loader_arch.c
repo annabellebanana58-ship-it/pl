@@ -51,8 +51,8 @@ arch_sync_icache_range(uintptr_t start, uintptr_t end)
 void
 arch_enter_kernel(uintptr_t entry, void *dtb)
 {
-    void (*kernel_entry)(void *) = (void (*)(void *))entry;
-    kernel_entry(dtb);
+    void (*kentry)(void *) = (void (*)(void *))entry;
+    kentry(dtb);
 
     arch_halt();
 }

@@ -1,0 +1,34 @@
+ENTRY(_kentry)
+SECTIONS
+{
+    . = 0x200000;
+
+    .text : ALIGN(4096)
+    {
+        KEEP(*(.text.boot))
+        *(.text .text.*)
+    }
+
+    .rodata : ALIGN(4096)
+    {
+        *(.rodata .rodata.*)
+    }
+
+    .data : ALIGN(4096)
+    {
+        *(.data .data.*)
+    }
+
+    .bss (NOLOAD) : ALIGN(16)
+    {
+        __bss_start = .;
+        *(.bss .bss.*)
+        *(COMMON)
+        . = ALIGN(16);
+        __bss_end = .;
+    }
+
+    . = ALIGN(16);
+    . += 0x10000;
+    __kernel_stack_top = .;
+}

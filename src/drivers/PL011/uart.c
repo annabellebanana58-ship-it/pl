@@ -35,5 +35,5 @@ uart_putc(char c)
 {
     while (UART0_FR & UART_FR_TXFF) {
     }
-    UART0_DR = (unsigned int)c;
+    UART0_DR = (unsigned int)(unsigned char)c;
 }

@@ -33,9 +33,10 @@ K_ARCH_DIR    := src/arch/arm/$(ARCH)
 K_LINKER      ?= $(K_ARCH_DIR)/kernel.ld
 
 INC_DIRS      := $(INC_DIR) \
-					$(LIB_DIR) \
-					$(DRIVER_DIR) \
-					$(ARCH_DIR)
+		 $(LIB_DIR) \
+		 $(DRIVER_DIR) \
+		 $(ARCH_DIR) \
+		 $(K_ARCH_DIR)
 
 LINKER_SCRIPT := $(ARCH_DIR)/loader.ld
 K_LINKER      ?= src/arch/arm/$(ARCH)/kernel.ld
@@ -54,6 +55,8 @@ LOADER_SRCS := $(ARCH_DIR)/boot.S \
                $(DRIVER_DIR)/uart.c
 
 KERNEL_SRCS := $(K_ARCH_DIR)/kentry.S \
+	       $(K_ARCH_DIR)/traps.S \
+	       $(K_ARCH_DIR)/exceptions.c \
                $(KERNEL_DIR)/kmain.c \
                $(LIB_DIR)/string.c \
                $(LIB_DIR)/kprint.c \

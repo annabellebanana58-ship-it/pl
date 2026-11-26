@@ -36,7 +36,17 @@ kprint(const char *fmt, ...)
             console_putc(*fmt);
             continue;
         }
-        switch (*++fmt) {
+
+        fmt++;
+
+        uint8_t longbool = 0;
+
+        while (*fmt == 'l') {
+                longbool = 1;
+                fmt++;
+        }
+
+        switch (*fmt) {
             case 'c':
                 console_putc((char)va_arg(ap, int));
                 break;
@@ -49,19 +59,38 @@ kprint(const char *fmt, ...)
                 break;
             }
             case 'd': {
-                long long v = va_arg(ap, int);
+                long long v;
+                unsigned long long mag;
+
+                if (longbool) {
+                    v = va_arg(ap, long long);
+                } else {
+                    v = va_arg(ap, int);
+                }
+
                 if (v < 0) {
                     console_putc('-');
-                    v = -v;
+                    mag = 0ULL - (unsigned long long)v;
+                } else {
+                    mag = (unsigned long long)v;
                 }
-                put_uint(v, 10);
+
+                put_uint(mag, 10);
                 break;
             }
             case 'u':
-                put_uint(va_arg(ap, unsigned int), 10);
+                if (longbool == 1) {
+                    put_uint(va_arg(ap, unsigned long long), 10);
+                } else {
+                    put_uint(va_arg(ap, unsigned int), 10);
+                }
                 break;
             case 'x':
-                put_uint(va_arg(ap, unsigned int), 16);
+                if (longbool == 1) {
+                    put_uint(va_arg(ap, unsigned long long), 16);
+                } else {
+                    put_uint(va_arg(ap, unsigned int), 16);
+                }
                 break;
             case 'p':
                 console_putc('0');
